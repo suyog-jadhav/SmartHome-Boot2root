@@ -1,0 +1,94 @@
+# SmartHome-Boot2Root
+
+A self-contained, Docker-based Boot2Root cybersecurity lab built around a deliberately vulnerable smart-home web application. Designed for local, isolated training use.
+
+---
+
+## ⚠️ Rules of Engagement
+
+> **This lab is for local, isolated use only.**
+> All ports are bound to `127.0.0.1` by default.
+> Never expose this container to a public network or the internet.
+> You are responsible for running this in a safe, contained environment.
+
+---
+
+## Prerequisites
+
+| Tool | Min version |
+|------|-------------|
+| Docker | 20.x |
+| Docker Compose | v2 (plugin) |
+| Python 3 | 3.9+ (for verification script) |
+
+---
+
+## Quick Start
+
+```bash
+git clone <repo-url> SmartHome-Boot2Root
+cd SmartHome-Boot2Root
+
+# Build and start (one command)
+docker compose up -d --build
+
+# Or use the Makefile
+make build
+make up
+```
+
+The lab will be available at:
+
+| Service | Address |
+|---------|---------|
+| Web App | http://127.0.0.1:5000 |
+| SSH     | `ssh -p 2222 <user>@127.0.0.1` |
+
+---
+
+## Objective
+
+Obtain **both flags**:
+
+- `user{...}` — located on the system, readable by a low-privilege user
+- `root{...}` — located in root's home directory
+
+No stage-by-stage hints are provided here. Enumerate the application and the host.
+
+---
+
+## Helper Commands
+
+```bash
+make build    # Rebuild the Docker image
+make up       # Start the lab
+make down     # Stop the lab
+make reset    # Destroy and restart with fresh flags
+make verify   # Run the automated end-to-end exploit verification
+make logs     # Tail container logs
+make shell    # Drop a debug root shell (host use only)
+```
+
+---
+
+## Configuration
+
+The donor SSH account password is set via the `SSHOLE_DONOR_PASSWORD` environment variable in `docker-compose.yml`. You can change it before building.
+
+---
+
+## Credits & Attribution
+
+The SSH authentication bypass technique used in this lab is based on the
+**BYO-CTF-SSHOLE** project. Attribution is retained in the source materials.
+
+> **Spoiler warning:** A detailed technical writeup of the SSHOLE technique is
+> available in the project's supplementary materials — read it *after* you've
+> rooted the box, or you'll spoil the challenge.
+
+---
+
+## License
+
+This lab is provided for educational and research purposes only.
+

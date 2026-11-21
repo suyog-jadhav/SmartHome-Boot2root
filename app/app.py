@@ -1,86 +1,97 @@
-from flask import render_template_string
-from flask import Flask, render_template, request, redirect, url_for, session
-from database import initialize_database, get_db
+"""
+SmartHome Lab — Flask application entry point.
+"""
+import os
+import sys
+import logging
+from flask import Flask, redirect, url_for, render_template
 
-app = Flask(__name__)
-app.secret_key = "smarthome-lab-secret"
+# Ensure blueprints can import siblings
+sys.path.insert(0, os.path.dirname(__file__))
 
-# Initialize database
-initialize_database()
+from database import initialize_database
+from blueprints.auth     import auth_bp
+from blueprints.dashboard import dashboard_bp
+from blueprints.devices   import devices_bp
+from blueprints.admin     import admin_bp
 
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
 
-@app.route("/")
-def home():
-    return redirect(url_for("login"))
+# ---------------------------------------------------------------------------
+# App factory
+# ---------------------------------------------------------------------------
 
+def create_app():
+    app = Flask(__name__, template_folder="templates", static_folder="static")
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    error = None
+    # Secret key generated at startup — not hardcoded
+    app.secret_key = os.environ.get("FLASK_SECRET", os.urandom(32))
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-
-        connection = get_db()
-
-        # Intentionally vulnerable SQL query for the SQL injection challenge
-        query = (
-            "SELECT * FROM users "
-            f"WHERE username = '{username}' AND password = '{password}'"
+    # ---------------------------------------------------------------------------
+    # Security headers (after_request)
+    # ---------------------------------------------------------------------------
+    @app.after_request
+    def set_security_headers(response):
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"]        = "DENY"
+        # CSP allows Bootstrap CDN + inline styles for the lab UI
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "script-src 'self' https://cdn.jsdelivr.net; "
+            "img-src 'self' data:; "
+            "font-src 'self' https://cdn.jsdelivr.net;"
         )
+        # Clue: hints at template engine without naming the vulnerability
+        response.headers["X-Powered-By"] = "Jinja2/3.1"
+        return response
 
-        user = connection.execute(query).fetchone()
-        connection.close()
+    # ---------------------------------------------------------------------------
+    # Error handlers
+    # ---------------------------------------------------------------------------
+    @app.errorhandler(401)
+    def unauthorized(e):
+        return render_template("errors/401.html"), 401
 
-        if user:
-            session["username"] = user["username"]
-            session["role"] = user["role"]
-            return redirect(url_for("dashboard"))
+    @app.errorhandler(403)
+    def forbidden(e):
+        return render_template("errors/403.html"), 403
 
-        error = "Invalid username or password"
+    @app.errorhandler(404)
+    def not_found(e):
+        return render_template("errors/404.html"), 404
 
-    return render_template("login.html", error=error)
+    @app.errorhandler(500)
+    def internal_error(e):
+        return render_template("errors/500.html"), 500
 
+    # ---------------------------------------------------------------------------
+    # Blueprints
+    # ---------------------------------------------------------------------------
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(devices_bp)
+    app.register_blueprint(admin_bp)
 
-@app.route("/dashboard")
-def dashboard():
-    if "username" not in session:
-        return redirect(url_for("login"))
+    # ---------------------------------------------------------------------------
+    # Root redirect
+    # ---------------------------------------------------------------------------
+    @app.route("/")
+    def home():
+        return redirect(url_for("auth.login"))
 
-    connection = get_db()
-    devices = connection.execute("SELECT * FROM devices").fetchall()
-    connection.close()
-
-    return render_template(
-        "dashboard.html",
-        username=session["username"],
-        role=session["role"],
-        devices=devices
-    )
-
-@app.route("/temperature", methods=["GET", "POST"])
-def temperature():
-    if "username" not in session:
-        return redirect(url_for("login"))
-
-    message = None
-
-    if request.method == "POST":
-        value = request.form.get("temperature", "")
-
-        # Intentionally vulnerable SSTI for the isolated Boot2Root lab
-        template = "Temperature updated to: " + value
-        message = render_template_string(template)
-
-    return render_template("temperature.html", message=message)
-
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect(url_for("login"))
+    return app
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    initialize_database()
+    application = create_app()
+    application.run(host="0.0.0.0", port=5000, debug=False)

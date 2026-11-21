@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Devices{% endblock %}
+{% block page_title %}Devices{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <form class="d-flex gap-2" method="GET" action="{{ url_for('devices.search_devices') }}">
+    <input type="text" name="q" class="form-control sh-form-control" style="width:220px;"
+           placeholder="Search devices…" value="{{ search|default('') }}">
+    <button class="btn btn-sh" type="submit">Search</button>
+  </form>
+</div>
+
+<div class="sh-card p-0">
+  <table class="table sh-table mb-0">
+    <thead>
+      <tr>
+        <th>Name</th><th>Type</th><th>Room</th>
+        <th>Status</th><th>Value</th><th>Firmware</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in devices %}
+      <tr>
+        <td>{{ d['name'] }}</td>
+        <td><span class="badge bg-secondary">{{ d['type'] }}</span></td>
+        <td>{{ d['room'] }}</td>
+        <td><span class="sh-badge-{{ d['status'] }}">● {{ d['status'] }}</span></td>
+        <td>{{ d['value'] }}</td>
+        <td><code style="font-size:.78rem;">{{ d['fw_ver'] }}</code></td>
+        <td>
+          {% if d['type'] == 'thermostat' %}
+          <a href="{{ url_for('devices.temperature', device_id=d['id']) }}"
+             class="btn btn-sh btn-sm">Adjust</a>
+          {% else %}
+          <a href="{{ url_for('devices.device_detail', device_id=d['id']) }}"
+             class="btn btn-sm btn-outline-secondary">View</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="text-center text-muted py-4">No devices found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+

@@ -1,0 +1,231 @@
+/* ── SmartHome Lab — app.css ── */
+
+:root {
+  --sh-bg:         #111827;
+  --sh-sidebar-bg: #1f2937;
+  --sh-card-bg:    #1f2937;
+  --sh-border:     #374151;
+  --sh-accent:     #10b981;
+  --sh-accent-dim: #064e3b;
+  --sh-text:       #f9fafb;
+  --sh-muted:      #9ca3af;
+  --sh-danger:     #ef4444;
+  --sh-sidebar-w:  220px;
+}
+
+/* ── Layout ─────────────────────────────────────────────────── */
+body.sh-body {
+  background: var(--sh-bg);
+  color: var(--sh-text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.sh-sidebar {
+  width: var(--sh-sidebar-w);
+  min-height: 100vh;
+  background: var(--sh-sidebar-bg);
+  border-right: 1px solid var(--sh-border);
+  position: fixed;
+  top: 0; left: 0;
+  padding: 1rem 0;
+  z-index: 100;
+}
+
+.sh-main {
+  margin-left: var(--sh-sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+.sh-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .25rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--sh-border);
+  margin-bottom: .5rem;
+}
+.sh-logo { font-size: 1.6rem; }
+.sh-brand-text { font-size: 1.1rem; font-weight: 700; color: var(--sh-accent); }
+
+.sh-nav-link {
+  color: var(--sh-muted) !important;
+  padding: .55rem 1.25rem;
+  border-radius: 6px;
+  margin: .1rem .5rem;
+  font-size: .9rem;
+  transition: background .15s, color .15s;
+}
+.sh-nav-link:hover, .sh-nav-link.active {
+  background: var(--sh-accent-dim);
+  color: var(--sh-accent) !important;
+}
+.sh-nav-icon { margin-right: .4rem; }
+
+.sh-sidebar-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--sh-border);
+  font-size: .82rem;
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+.sh-user-badge { font-weight: 600; color: var(--sh-text); }
+.sh-logout-link { color: var(--sh-danger); text-decoration: none; font-size: .8rem; }
+.sh-logout-link:hover { text-decoration: underline; }
+
+/* ── Topbar ──────────────────────────────────────────────────── */
+.sh-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 2rem .6rem;
+  border-bottom: 1px solid var(--sh-border);
+  background: var(--sh-bg);
+}
+.sh-page-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--sh-text);
+}
+
+/* ── Content ─────────────────────────────────────────────────── */
+.sh-content {
+  padding: 1.5rem 2rem;
+  flex: 1;
+}
+
+/* ── Cards ───────────────────────────────────────────────────── */
+.sh-card {
+  background: var(--sh-card-bg);
+  border: 1px solid var(--sh-border);
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+}
+.sh-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: .4rem;
+  color: var(--sh-text);
+}
+.sh-card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--sh-accent);
+}
+.sh-card-sub {
+  font-size: .78rem;
+  color: var(--sh-muted);
+}
+
+/* Status badges */
+.sh-badge-online  { color: var(--sh-accent);  font-size:.75rem; font-weight:600; }
+.sh-badge-offline { color: var(--sh-danger);  font-size:.75rem; font-weight:600; }
+.sh-badge-off     { color: var(--sh-muted);   font-size:.75rem; font-weight:600; }
+
+/* ── Tables ──────────────────────────────────────────────────── */
+.sh-table { color: var(--sh-text); }
+.sh-table thead th {
+  background: var(--sh-sidebar-bg);
+  color: var(--sh-muted);
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  border-color: var(--sh-border);
+}
+.sh-table tbody td { border-color: var(--sh-border); }
+.sh-table tbody tr:hover td { background: rgba(16,185,129,.06); }
+
+/* ── Forms ───────────────────────────────────────────────────── */
+.sh-form-control {
+  background: #111827;
+  border: 1px solid var(--sh-border);
+  color: var(--sh-text);
+  border-radius: 6px;
+}
+.sh-form-control:focus {
+  background: #111827;
+  border-color: var(--sh-accent);
+  color: var(--sh-text);
+  box-shadow: 0 0 0 2px rgba(16,185,129,.25);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn-sh {
+  background: var(--sh-accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: .45rem 1.1rem;
+  font-weight: 600;
+  transition: opacity .15s;
+}
+.btn-sh:hover { opacity: .88; color: #fff; }
+
+/* ── Log viewer ──────────────────────────────────────────────── */
+.sh-log-entry {
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: .78rem;
+  color: var(--sh-muted);
+  padding: .2rem 0;
+  border-bottom: 1px solid var(--sh-border);
+}
+.sh-log-entry .log-src-cron       { color: #f59e0b; }
+.sh-log-entry .log-src-auth       { color: #60a5fa; }
+.sh-log-entry .log-src-system     { color: var(--sh-accent); }
+.sh-log-entry .log-src-automation { color: #c084fc; }
+
+/* ── Login page ──────────────────────────────────────────────── */
+.sh-login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sh-bg);
+}
+.sh-login-box {
+  background: var(--sh-card-bg);
+  border: 1px solid var(--sh-border);
+  border-radius: 14px;
+  padding: 2.5rem 2rem;
+  width: 360px;
+}
+.sh-login-logo {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: .5rem;
+}
+.sh-login-title {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--sh-accent);
+  margin-bottom: .2rem;
+}
+.sh-login-sub {
+  text-align: center;
+  font-size: .82rem;
+  color: var(--sh-muted);
+  margin-bottom: 1.5rem;
+}
+
+/* ── Error pages ─────────────────────────────────────────────── */
+.sh-error-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sh-bg);
+  flex-direction: column;
+  gap: 1rem;
+}
+.sh-error-code { font-size: 5rem; font-weight: 800; color: var(--sh-accent); }
+.sh-error-msg  { font-size: 1.1rem; color: var(--sh-muted); }
+

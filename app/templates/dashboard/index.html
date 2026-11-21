@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Device summary cards -->
+<div class="row g-3 mb-4">
+  {% set counts = {'thermostat': 0, 'light': 0, 'lock': 0, 'camera': 0, 'hub': 0} %}
+  {% for d in devices %}
+    <div class="col-sm-6 col-lg-4">
+      <div class="sh-card h-100">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="sh-card-title">{{ d['name'] }}</div>
+            <div class="sh-card-sub">{{ d['room'] }}</div>
+          </div>
+          <span class="sh-badge-{{ d['status'] }}">● {{ d['status']|upper }}</span>
+        </div>
+        <div class="sh-card-value mt-2">
+          {% if d['type'] == 'thermostat' %}{{ d['value'] }} °C
+          {% elif d['type'] == 'lock' %}🔒 {{ d['value'] }}
+          {% elif d['type'] == 'light' %}💡 {{ d['value'] }}
+          {% elif d['type'] == 'camera' %}📹 {{ d['value'] }}
+          {% elif d['type'] == 'hub' %}⚡ {{ d['value'] }}
+          {% else %}{{ d['value'] }}
+          {% endif %}
+        </div>
+        <div class="mt-2">
+          {% if d['type'] == 'thermostat' %}
+          <a href="{{ url_for('devices.temperature', device_id=d['id']) }}"
+             class="btn btn-sh btn-sm">Adjust</a>
+          {% endif %}
+          <a href="{{ url_for('devices.device_detail', device_id=d['id']) }}"
+             class="btn btn-sm btn-outline-secondary ms-1">Details</a>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="col-12"><p class="text-muted">No devices registered.</p></div>
+  {% endfor %}
+</div>
+
+<!-- Recent activity log -->
+<div class="sh-card">
+  <div class="sh-card-title mb-3">Recent Activity</div>
+  {% for entry in logs %}
+  <div class="sh-log-entry">
+    <span class="log-src-{{ entry['source'] }}">[{{ entry['source'] }}]</span>
+    <span class="ms-2">{{ entry['ts'] }}</span>
+    <span class="ms-2">{{ entry['message'] }}</span>
+  </div>
+  {% else %}
+  <p class="text-muted small">No log entries.</p>
+  {% endfor %}
+</div>
+{% endblock %}
+

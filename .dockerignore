@@ -1,0 +1,26 @@
+# Exclude from Docker build context
+.venv/
+.git/
+__pycache__/
+*.pyc
+*.db
+*.log
+.env
+.env.*
+
+# Generated flags
+user.txt
+root.txt
+
+# Private docs
+SOLUTION.md
+
+# Legacy bundles (not needed by Dockerfile.selfcontained)
+sshole.zip
+BYO-CTF-SSHOLE-main/
+
+# Dev tools
+.idea/
+.vscode/
+.DS_Store
+*.md.bak

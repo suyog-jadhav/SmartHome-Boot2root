@@ -1,21 +1,39 @@
-# Python virtual environment
+# Python
 .venv/
-
-# Python cache
 __pycache__/
 *.pyc
+*.pyo
 
-# SQLite database
+# SQLite databases (auto-generated at runtime)
 *.db
-
-# Environment variables and secrets
-.env
 
 # Logs
 *.log
 
+# Secrets / environment
+.env
+.env.*
+
 # Generated SSH host keys
 ssh/ssh_host_*
+app/ssh_host_*
 
-# OS files
+# Generated flags (never commit)
+user.txt
+root.txt
+
+# macOS
 .DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# SOLUTION.md — keep off public release (move to private branch before tagging)
+# Comment this out if you want to track it in a private repo:
+# SOLUTION.md
+
+# Legacy source bundles (absorbed into Dockerfile.selfcontained)
+sshole.zip
+BYO-CTF-SSHOLE-main/
+SOLUTION.md

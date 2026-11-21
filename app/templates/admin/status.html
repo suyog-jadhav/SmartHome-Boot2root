@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}System Status{% endblock %}
+{% block page_title %}System Status{% endblock %}
+
+{% block content %}
+<!-- Clue: legacy OpenSSH, cron schedule visible -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="sh-card">
+      <div class="sh-card-title">Platform</div>
+      <div class="sh-card-sub">SmartHome Gateway</div>
+      <div class="mt-2" style="font-size:.85rem;">
+        <div>Version: <strong>2.4.1-prod</strong></div>
+        <div>Uptime: <strong>3d 14h 22m</strong></div>
+        <div>Environment: <strong>production</strong></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="sh-card">
+      <div class="sh-card-title">SSH Service</div>
+      <!-- Clue: legacy build / upgrade scheduled -->
+      <div class="sh-card-sub text-warning">⚠ Legacy build</div>
+      <div class="mt-2" style="font-size:.85rem;">
+        <div>Daemon: <strong>OpenSSH</strong></div>
+        <div>Version: <strong>9.0p1</strong></div>
+        <div>Status: <span class="sh-badge-online">● running</span></div>
+        <div class="text-warning mt-1" style="font-size:.78rem;">
+          Note: legacy OpenSSH build in use — upgrade to current release scheduled for Q1.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="sh-card">
+      <div class="sh-card-title">Scheduled Tasks</div>
+      <div class="sh-card-sub">Cron jobs</div>
+      <div class="mt-2" style="font-size:.85rem; font-family: monospace;">
+        <!-- Clue: cron target is /opt/maintenance.sh -->
+        <div>* * * * *  <code>/opt/maintenance.sh</code></div>
+        <div class="text-muted mt-1" style="font-size:.74rem; font-family: sans-serif;">
+          Runs as root every minute. Script managed by automation service account.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sh-card">
+  <div class="sh-card-title mb-3">Full Activity Log</div>
+  {% for entry in logs %}
+  <div class="sh-log-entry">
+    <span class="log-src-{{ entry['source'] }}">[{{ entry['source'] }}]</span>
+    <span class="ms-2 text-muted" style="font-size:.74rem;">{{ entry['ts'] }}</span>
+    <span class="ms-2">{{ entry['message'] }}</span>
+  </div>
+  {% else %}
+  <p class="text-muted small">No log entries.</p>
+  {% endfor %}
+</div>
+{% endblock %}
+

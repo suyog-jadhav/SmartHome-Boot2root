@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+{% block page_title %}Admin Panel{% endblock %}
+
+{% block content %}
+<!-- Users table -->
+<div class="sh-card mb-4">
+  <div class="sh-card-title mb-3">User Accounts</div>
+  <table class="table sh-table table-sm mb-0">
+    <thead><tr><th>ID</th><th>Username</th><th>Role</th></tr></thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u['id'] }}</td>
+        <td>{{ u['username'] }}</td>
+        <td>
+          <span class="badge {% if u['role'] == 'admin' %}bg-danger{% else %}bg-secondary{% endif %}">
+            {{ u['role'] }}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Device management -->
+<div class="sh-card mb-4">
+  <div class="sh-card-title mb-3">Registered Devices</div>
+  <table class="table sh-table table-sm mb-0">
+    <thead><tr><th>Name</th><th>Type</th><th>Room</th><th>Status</th><th>FW</th></tr></thead>
+    <tbody>
+      {% for d in devices %}
+      <tr>
+        <td>{{ d['name'] }}</td>
+        <td>{{ d['type'] }}</td>
+        <td>{{ d['room'] }}</td>
+        <td><span class="sh-badge-{{ d['status'] }}">{{ d['status'] }}</span></td>
+        <td><code style="font-size:.75rem;">{{ d['fw_ver'] }}</code></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Activity log — clue: cron running /opt/maintenance.sh every minute -->
+<div class="sh-card">
+  <div class="sh-card-title mb-3">Activity Log</div>
+  {% for entry in logs %}
+  <div class="sh-log-entry">
+    <span class="log-src-{{ entry['source'] }}">[{{ entry['source'] }}]</span>
+    <span class="ms-2 text-muted" style="font-size:.74rem;">{{ entry['ts'] }}</span>
+    <span class="ms-2">{{ entry['message'] }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+

@@ -1,0 +1,46 @@
+FROM alpine:3.16
+
+# Install Python, pip and SSH dependencies
+RUN apk add --no-cache python3 py3-pip libedit
+
+# Install the locally supplied OpenSSH packages
+COPY openssh/ /tmp/openssh/
+
+RUN apk add --no-network /tmp/openssh/*.apk \
+    && rm -rf /tmp/openssh
+
+# Create lab accounts
+RUN adduser -D -s /bin/sh automation \
+    && adduser -D -s /bin/sh sshole-donor \
+    && adduser -D -s /bin/sh websvc
+
+# Configure intentionally vulnerable root cron maintenance task
+COPY cron/maintenance.sh /opt/maintenance.sh
+
+RUN chown root:root /opt/maintenance.sh \
+    && chmod 777 /opt/maintenance.sh \
+    && printf '* * * * * /bin/sh /opt/maintenance.sh\n' > /etc/crontabs/root \
+    && chmod 600 /etc/crontabs/root
+
+# Keep automation locked
+RUN sed -i 's/^automation:[^:]*:/automation:*:/' /etc/shadow
+
+# Configure SSH
+RUN mkdir -p /run/sshd \
+    && printf '\nPermitRootLogin no\nPasswordAuthentication yes\n' \
+       >> /etc/ssh/sshd_config
+
+# Install Flask application
+COPY requirements.txt /requirements.txt
+RUN python3 -m pip install --no-cache-dir -r /requirements.txt
+
+COPY app/ /app/
+RUN chown -R websvc:websvc /app
+
+# Install startup script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 22 5000
+
+ENTRYPOINT ["/entrypoint.sh"]

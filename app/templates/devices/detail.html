@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ device['name'] }}{% endblock %}
+{% block page_title %}{{ device['name'] }}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-6">
+    <div class="sh-card">
+      <div class="sh-card-title mb-3">Device Details</div>
+      <table class="table sh-table table-sm">
+        <tbody>
+          <tr><td class="text-muted">ID</td><td>{{ device['id'] }}</td></tr>
+          <tr><td class="text-muted">Name</td><td>{{ device['name'] }}</td></tr>
+          <tr><td class="text-muted">Type</td><td>{{ device['type'] }}</td></tr>
+          <tr><td class="text-muted">Room</td><td>{{ device['room'] }}</td></tr>
+          <tr><td class="text-muted">Status</td>
+              <td><span class="sh-badge-{{ device['status'] }}">{{ device['status'] }}</span></td>
+          </tr>
+          <tr><td class="text-muted">Value</td><td>{{ device['value'] }}</td></tr>
+          <tr><td class="text-muted">Firmware</td><td><code>{{ device['fw_ver'] }}</code></td></tr>
+        </tbody>
+      </table>
+      {% if device['type'] == 'thermostat' %}
+      <a href="{{ url_for('devices.temperature', device_id=device['id']) }}"
+         class="btn btn-sh btn-sm">Adjust Temperature</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
