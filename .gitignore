@@ -1,0 +1,21 @@
+# Python virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# SQLite database
+*.db
+
+# Environment variables and secrets
+.env
+
+# Logs
+*.log
+
+# Generated SSH host keys
+ssh/ssh_host_*
+
+# OS files
+.DS_Store

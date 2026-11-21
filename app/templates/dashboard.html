@@ -1,0 +1,60 @@
+	<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartHome Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #172033;
+            color: white;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .device {
+            background: #25334d;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+        }
+
+        a {
+            color: #55d6be;
+            text-decoration: none;
+        }
+
+        .temperature {
+            font-size: 28px;
+            color: #55d6be;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SmartHome Dashboard</h1>
+
+        <p>Welcome, {{ username }}!</p>
+        <p>Account role: {{ role }}</p>
+
+        <h2>Connected Devices</h2>
+
+        {% for device in devices %}
+            <div class="device">
+                <h3>{{ device["name"] }}</h3>
+                <p class="temperature">
+                    {{ device["temperature"] }} °C
+                </p>
+                <a href="{{ url_for('temperature') }}">Manage temperature</a>
+            </div>
+        {% endfor %}
+
+        <p><a href="{{ url_for('logout') }}">Logout</a></p>
+    </div>
+</body>
+</html>
