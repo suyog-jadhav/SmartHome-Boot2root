@@ -8,7 +8,7 @@ A self-contained, Docker-based Boot2Root cybersecurity lab simulating an enterpr
 
 ```bash
 # Clone the repository
-git clone <repo-url> SmartHome-Boot2Root
+git clone [<repo-url>](https://github.com/suyog-jadhav/SmartHome-Boot2root) SmartHome-Boot2Root
 cd SmartHome-Boot2Root
 
 # Build and start the lab
