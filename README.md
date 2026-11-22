@@ -4,7 +4,7 @@ A self-contained, Docker-based Boot2Root cybersecurity lab simulating an enterpr
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Clone the repository
@@ -27,7 +27,13 @@ For detailed startup instructions, networking notes, and troubleshooting, see th
 
 ---
 
-## 🎯 Challenge Overview
+## Documentation
+
+- [Student Setup Guide](SETUP.md) — prerequisites, networking details, recommended workflow, and troubleshooting
+
+---
+
+## Challenge Overview
 
 - **Difficulty**: Medium
 - **Category**: Web Security / Linux Privilege Escalation
@@ -36,11 +42,9 @@ For detailed startup instructions, networking notes, and troubleshooting, see th
   - `user.txt` — Standard user flag
   - `root.txt` — Root administrator flag in `/root/root.txt`
 
-For challenge metadata and scope, see [CHALLENGE_INFO.md](CHALLENGE_INFO.md).
-
 ---
 
-## 🛠️ Management Commands
+## Management Commands
 
 Using `docker compose`:
 ```bash
@@ -61,16 +65,14 @@ make verify                # Run automated verification suite
 
 ---
 
-## ⚠️ Rules of Engagement
+## Rules of Engagement
 
-- This lab is strictly for **local, isolated educational use**.
+- This lab is strictly for local, isolated educational use.
 - Do not expose the container to public networks or the internet.
 - Flags and keys are generated dynamically at runtime and are unique to each container deployment.
 
 ---
 
-## 📜 License & Attribution
+## License
 
-- The SSH authentication vulnerability in this lab is based on research from the **BYO-CTF-SSHOLE** project.
-- Provided for educational and security training purposes only.
-
+Provided for educational and security training purposes only.

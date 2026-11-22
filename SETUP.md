@@ -1,6 +1,6 @@
 # SmartHome-Boot2Root — Student Setup & Lab Guide
 
-Welcome to the **SmartHome-Boot2Root** lab environment. This document outlines everything you need to start, access, and verify the lab machine.
+Welcome to the SmartHome-Boot2Root lab environment. This document outlines everything you need to start, access, and verify the lab machine.
 
 ---
 
@@ -89,37 +89,37 @@ Flags follow the standard format:
 
 ## 6. Managing the Lab
 
-- **View Container Logs**:
-  ```bash
-  docker compose logs -f
-  # or: make logs
-  ```
+**View container logs:**
+```bash
+docker compose logs -f
+# or: make logs
+```
 
-- **Stop the Lab**:
-  ```bash
-  docker compose down
-  # or: make down
-  ```
+**Stop the lab:**
+```bash
+docker compose down
+# or: make down
+```
 
-- **Reset Lab (Fresh Flags & DB)**:
-  ```bash
-  docker compose down -v
-  docker compose up -d
-  # or: make reset
-  ```
+**Reset the lab (fresh flags and database):**
+```bash
+docker compose down -v
+docker compose up -d
+# or: make reset
+```
 
 ---
 
 ## 7. Troubleshooting
 
-- **Target IP `10.10.10.100` unreachable?**
-  - Ensure the Docker daemon is running and no other container is using `10.10.10.100`.
-  - On non-Linux hosts (e.g. macOS Docker Desktop), container IPs may not be directly routable from the host. Use the mapped fallback ports instead:
-    - Web: `http://127.0.0.1:5000`
-    - SSH: `ssh -p 2222 <user>@127.0.0.1`
-- **Need to rebuild after edits?**
-  ```bash
-  docker compose build --no-cache
-  docker compose up -d
-  ```
+**Target IP `10.10.10.100` unreachable?**
+- Ensure the Docker daemon is running and no other container is using `10.10.10.100`.
+- On non-Linux hosts (e.g. macOS Docker Desktop), container IPs may not be directly routable from the host. Use the mapped fallback ports instead:
+  - Web: `http://127.0.0.1:5000`
+  - SSH: `ssh -p 2222 <user>@127.0.0.1`
 
+**Need to rebuild after edits?**
+```bash
+docker compose build --no-cache
+docker compose up -d
+```
