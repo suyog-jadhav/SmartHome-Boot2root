@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><title>404 — Not Found</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<html lang="en"><head><meta charset="UTF-8"><title>404 Not Found</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}"></head>
 <body><div class="sh-error-wrapper">
-  <div class="sh-error-code">404</div>
-  <div class="sh-error-msg">Page not found.</div>
-  <a href="/" style="color:#10b981;font-size:.9rem;">← Home</a>
+  <div class="sh-error-box">
+    <div class="sh-error-code">404</div>
+    <div class="sh-error-msg"><strong>Resource Not Found</strong><br>The requested URI does not exist on this gateway.</div>
+    <a href="/" class="btn btn-sh">&laquo; Return Home</a>
+  </div>
 </div></body></html>
-

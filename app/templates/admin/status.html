@@ -1,62 +1,71 @@
 {% extends "base.html" %}
-{% block title %}System Status{% endblock %}
-{% block page_title %}System Status{% endblock %}
+{% block title %}System Status & Diagnostics{% endblock %}
+{% block page_title %}Subsystem Health & Diagnostic Information{% endblock %}
 
 {% block content %}
-<!-- Clue: legacy OpenSSH, cron schedule visible -->
-<div class="row g-3 mb-4">
+<!-- Clues preserved: OpenSSH 9.0p1 legacy build, cron schedule -->
+<div class="row g-2 mb-3">
   <div class="col-md-4">
-    <div class="sh-card">
-      <div class="sh-card-title">Platform</div>
-      <div class="sh-card-sub">SmartHome Gateway</div>
-      <div class="mt-2" style="font-size:.85rem;">
-        <div>Version: <strong>2.4.1-prod</strong></div>
-        <div>Uptime: <strong>3d 14h 22m</strong></div>
-        <div>Environment: <strong>production</strong></div>
-      </div>
+    <div class="sh-card h-100">
+      <div class="sh-card-title">Controller Core</div>
+      <table class="table sh-table mb-0">
+        <tbody>
+          <tr><td style="font-weight:bold;">Subsystem:</td><td>Embedded Linux Gateway</td></tr>
+          <tr><td style="font-weight:bold;">Kernel:</td><td>v5.15-lts (musl-libc)</td></tr>
+          <tr><td style="font-weight:bold;">Build Rev:</td><td>2.4.1-prod</td></tr>
+          <tr><td style="font-weight:bold;">Uptime:</td><td>3d 14h 22m</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
   <div class="col-md-4">
-    <div class="sh-card">
-      <div class="sh-card-title">SSH Service</div>
-      <!-- Clue: legacy build / upgrade scheduled -->
-      <div class="sh-card-sub text-warning">⚠ Legacy build</div>
-      <div class="mt-2" style="font-size:.85rem;">
-        <div>Daemon: <strong>OpenSSH</strong></div>
-        <div>Version: <strong>9.0p1</strong></div>
-        <div>Status: <span class="sh-badge-online">● running</span></div>
-        <div class="text-warning mt-1" style="font-size:.78rem;">
-          Note: legacy OpenSSH build in use — upgrade to current release scheduled for Q1.
-        </div>
-      </div>
+    <div class="sh-card h-100">
+      <div class="sh-card-title">Remote Administration Daemon</div>
+      <table class="table sh-table mb-0">
+        <tbody>
+          <tr><td style="font-weight:bold;">Service:</td><td>OpenSSH Daemon</td></tr>
+          <tr><td style="font-weight:bold;">Version:</td><td><strong>9.0p1</strong></td></tr>
+          <tr><td style="font-weight:bold;">Status:</td><td><span class="sh-badge-online">[ACTIVE]</span></td></tr>
+          <tr>
+            <td colspan="2" style="font-size:10px; color:#aa0000; background:#fff8f8;">
+              [DIAGNOSTIC NOTE]: Legacy OpenSSH build detected. Upgrade scheduled for Q1 maintenance window.
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
   <div class="col-md-4">
-    <div class="sh-card">
-      <div class="sh-card-title">Scheduled Tasks</div>
-      <div class="sh-card-sub">Cron jobs</div>
-      <div class="mt-2" style="font-size:.85rem; font-family: monospace;">
-        <!-- Clue: cron target is /opt/maintenance.sh -->
-        <div>* * * * *  <code>/opt/maintenance.sh</code></div>
-        <div class="text-muted mt-1" style="font-size:.74rem; font-family: sans-serif;">
-          Runs as root every minute. Script managed by automation service account.
-        </div>
-      </div>
+    <div class="sh-card h-100">
+      <div class="sh-card-title">Automated Task Scheduler</div>
+      <table class="table sh-table mb-0">
+        <tbody>
+          <tr><td style="font-weight:bold;">Daemon:</td><td>crond (interval: 60s)</td></tr>
+          <tr><td style="font-weight:bold;">Target Task:</td><td><code>/opt/maintenance.sh</code></td></tr>
+          <tr><td style="font-weight:bold;">User Context:</td><td>UID 0 (root)</td></tr>
+          <tr>
+            <td colspan="2" style="font-size:10px; color:#555; background:#f9f9f9;">
+              Execution: <code>* * * * * /bin/sh /opt/maintenance.sh</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
 
 <div class="sh-card">
-  <div class="sh-card-title mb-3">Full Activity Log</div>
-  {% for entry in logs %}
-  <div class="sh-log-entry">
-    <span class="log-src-{{ entry['source'] }}">[{{ entry['source'] }}]</span>
-    <span class="ms-2 text-muted" style="font-size:.74rem;">{{ entry['ts'] }}</span>
-    <span class="ms-2">{{ entry['message'] }}</span>
+  <div class="sh-card-title">Gateway Event Audit Log (Full Record)</div>
+  <div class="sh-log-container" style="max-height: 280px;">
+    {% for entry in logs %}
+    <div class="sh-log-entry">
+      <span class="log-src-{{ entry['source'] }}">[{{ entry['source']|upper }}]</span>
+      <span style="color:#777;">{{ entry['ts'] }}</span> &mdash;
+      <span>{{ entry['message'] }}</span>
+    </div>
+    {% else %}
+    <div class="text-muted small">No audit records found.</div>
+    {% endfor %}
   </div>
-  {% else %}
-  <p class="text-muted small">No log entries.</p>
-  {% endfor %}
 </div>
 {% endblock %}
-

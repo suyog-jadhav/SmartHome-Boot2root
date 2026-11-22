@@ -1,58 +1,66 @@
 {% extends "base.html" %}
-{% block title %}Admin Panel{% endblock %}
-{% block page_title %}Admin Panel{% endblock %}
+{% block title %}System Administration{% endblock %}
+{% block page_title %}Central Gateway Administration Console{% endblock %}
 
 {% block content %}
-<!-- Users table -->
-<div class="sh-card mb-4">
-  <div class="sh-card-title mb-3">User Accounts</div>
-  <table class="table sh-table table-sm mb-0">
-    <thead><tr><th>ID</th><th>Username</th><th>Role</th></tr></thead>
-    <tbody>
-      {% for u in users %}
-      <tr>
-        <td>{{ u['id'] }}</td>
-        <td>{{ u['username'] }}</td>
-        <td>
-          <span class="badge {% if u['role'] == 'admin' %}bg-danger{% else %}bg-secondary{% endif %}">
-            {{ u['role'] }}
-          </span>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-
-<!-- Device management -->
-<div class="sh-card mb-4">
-  <div class="sh-card-title mb-3">Registered Devices</div>
-  <table class="table sh-table table-sm mb-0">
-    <thead><tr><th>Name</th><th>Type</th><th>Room</th><th>Status</th><th>FW</th></tr></thead>
-    <tbody>
-      {% for d in devices %}
-      <tr>
-        <td>{{ d['name'] }}</td>
-        <td>{{ d['type'] }}</td>
-        <td>{{ d['room'] }}</td>
-        <td><span class="sh-badge-{{ d['status'] }}">{{ d['status'] }}</span></td>
-        <td><code style="font-size:.75rem;">{{ d['fw_ver'] }}</code></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-
-<!-- Activity log — clue: cron running /opt/maintenance.sh every minute -->
-<div class="sh-card">
-  <div class="sh-card-title mb-3">Activity Log</div>
-  {% for entry in logs %}
-  <div class="sh-log-entry">
-    <span class="log-src-{{ entry['source'] }}">[{{ entry['source'] }}]</span>
-    <span class="ms-2 text-muted" style="font-size:.74rem;">{{ entry['ts'] }}</span>
-    <span class="ms-2">{{ entry['message'] }}</span>
+<div class="row g-2 mb-3">
+  <!-- Users table -->
+  <div class="col-md-6">
+    <div class="sh-card h-100">
+      <div class="sh-card-title">Operator Accounts (ACL)</div>
+      <table class="table sh-table mb-0">
+        <thead>
+          <tr>
+            <th>UID</th>
+            <th>Account Identifier</th>
+            <th>Privilege Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>{{ u['id'] }}</td>
+            <td><strong>{{ u['username'] }}</strong></td>
+            <td>
+              <span class="sh-role-badge">[{{ u['role']|upper }}]</span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
-  {% endfor %}
+
+  <!-- Gateway quick status -->
+  <div class="col-md-6">
+    <div class="sh-card h-100">
+      <div class="sh-card-title">Administrative Actions</div>
+      <p class="small text-muted mb-2">
+        Direct management actions for local IoT peripherals and audit subsystems.
+      </p>
+      <div class="d-flex flex-column gap-2">
+        <div>
+          <a href="{{ url_for('admin.status') }}" class="btn btn-sh">[Review Service Status & Diagnostics]</a>
+        </div>
+        <div>
+          <a href="{{ url_for('devices.list_devices') }}" class="btn btn-sh">[Inspect All Bus Peripherals]</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Activity log -->
+<div class="sh-card">
+  <div class="sh-card-title">Administrative Activity Journal</div>
+  <div class="sh-log-container">
+    {% for entry in logs %}
+    <div class="sh-log-entry">
+      <span class="log-src-{{ entry['source'] }}">[{{ entry['source']|upper }}]</span>
+      <span style="color:#777;">{{ entry['ts'] }}</span> &mdash;
+      <span>{{ entry['message'] }}</span>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}
-

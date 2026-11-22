@@ -1,13 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Devices{% endblock %}
-{% block page_title %}Devices{% endblock %}
+{% block title %}Device Inventory{% endblock %}
+{% block page_title %}Connected Device Inventory{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between mb-3">
-  <form class="d-flex gap-2" method="GET" action="{{ url_for('devices.search_devices') }}">
-    <input type="text" name="q" class="form-control sh-form-control" style="width:220px;"
-           placeholder="Search devices…" value="{{ search|default('') }}">
+<div class="sh-card mb-2 py-2">
+  <form class="d-flex gap-2 align-items-center" method="GET" action="{{ url_for('devices.search_devices') }}">
+    <span class="small" style="font-weight:bold;">Filter Devices:</span>
+    <input type="text" name="q" class="form-control sh-form-control" style="width:200px;"
+           placeholder="Device name..." value="{{ search|default('') }}">
     <button class="btn btn-sh" type="submit">Search</button>
+    {% if search %}
+    <a href="{{ url_for('devices.list_devices') }}" class="small ms-2">[Clear Filter]</a>
+    {% endif %}
   </form>
 </div>
 
@@ -15,34 +19,38 @@
   <table class="table sh-table mb-0">
     <thead>
       <tr>
-        <th>Name</th><th>Type</th><th>Room</th>
-        <th>Status</th><th>Value</th><th>Firmware</th><th></th>
+        <th>Device Name</th>
+        <th>Subsystem Type</th>
+        <th>Location</th>
+        <th>Link Status</th>
+        <th>Current Value</th>
+        <th>Firmware</th>
+        <th>Operations</th>
       </tr>
     </thead>
     <tbody>
       {% for d in devices %}
       <tr>
-        <td>{{ d['name'] }}</td>
-        <td><span class="badge bg-secondary">{{ d['type'] }}</span></td>
+        <td><strong>{{ d['name'] }}</strong></td>
+        <td><code>{{ d['type'] }}</code></td>
         <td>{{ d['room'] }}</td>
-        <td><span class="sh-badge-{{ d['status'] }}">● {{ d['status'] }}</span></td>
-        <td>{{ d['value'] }}</td>
-        <td><code style="font-size:.78rem;">{{ d['fw_ver'] }}</code></td>
+        <td><span class="sh-badge-{{ d['status'] }}">[{{ d['status']|upper }}]</span></td>
+        <td style="font-family: monospace;">{{ d['value'] }}</td>
+        <td><code>{{ d['fw_ver'] }}</code></td>
         <td>
           {% if d['type'] == 'thermostat' %}
           <a href="{{ url_for('devices.temperature', device_id=d['id']) }}"
-             class="btn btn-sh btn-sm">Adjust</a>
+             class="btn btn-sh btn-sm">[Adjust]</a>
           {% else %}
           <a href="{{ url_for('devices.device_detail', device_id=d['id']) }}"
-             class="btn btn-sm btn-outline-secondary">View</a>
+             class="btn btn-sh btn-sm">[View]</a>
           {% endif %}
         </td>
       </tr>
       {% else %}
-      <tr><td colspan="7" class="text-center text-muted py-4">No devices found.</td></tr>
+      <tr><td colspan="7" class="text-center text-muted py-3">No matching records found.</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
 {% endblock %}
-

@@ -1,57 +1,69 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
+{% block title %}Control Dashboard{% endblock %}
+{% block page_title %}System Overview &mdash; Active Devices{% endblock %}
 
 {% block content %}
-<!-- Device summary cards -->
-<div class="row g-3 mb-4">
-  {% set counts = {'thermostat': 0, 'light': 0, 'lock': 0, 'camera': 0, 'hub': 0} %}
-  {% for d in devices %}
-    <div class="col-sm-6 col-lg-4">
-      <div class="sh-card h-100">
-        <div class="d-flex justify-content-between align-items-start">
-          <div>
-            <div class="sh-card-title">{{ d['name'] }}</div>
-            <div class="sh-card-sub">{{ d['room'] }}</div>
-          </div>
-          <span class="sh-badge-{{ d['status'] }}">● {{ d['status']|upper }}</span>
-        </div>
-        <div class="sh-card-value mt-2">
-          {% if d['type'] == 'thermostat' %}{{ d['value'] }} °C
-          {% elif d['type'] == 'lock' %}🔒 {{ d['value'] }}
-          {% elif d['type'] == 'light' %}💡 {{ d['value'] }}
-          {% elif d['type'] == 'camera' %}📹 {{ d['value'] }}
-          {% elif d['type'] == 'hub' %}⚡ {{ d['value'] }}
+<!-- Device summary table (Old-school clean tabular layout) -->
+<div class="sh-card mb-3">
+  <div class="sh-card-title">Registered Peripheral Devices ({{ devices|length }})</div>
+  <table class="table sh-table mb-0">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Device Name</th>
+        <th style="width: 15%;">Location</th>
+        <th style="width: 12%;">Type</th>
+        <th style="width: 12%;">Status</th>
+        <th style="width: 18%;">Reading / State</th>
+        <th style="width: 18%;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in devices %}
+      <tr>
+        <td><strong>{{ d['name'] }}</strong></td>
+        <td>{{ d['room'] }}</td>
+        <td><span style="font-family: monospace;">{{ d['type'] }}</span></td>
+        <td>
+          <span class="sh-badge-{{ d['status'] }}">[{{ d['status']|upper }}]</span>
+        </td>
+        <td style="font-family: monospace; font-weight: bold;">
+          {% if d['type'] == 'thermostat' %}{{ d['value'] }} &deg;C
+          {% elif d['type'] == 'lock' %}{{ d['value']|upper }}
+          {% elif d['type'] == 'light' %}{{ d['value']|upper }}
+          {% elif d['type'] == 'camera' %}{{ d['value']|upper }}
+          {% elif d['type'] == 'hub' %}{{ d['value']|upper }}
           {% else %}{{ d['value'] }}
           {% endif %}
-        </div>
-        <div class="mt-2">
+        </td>
+        <td>
           {% if d['type'] == 'thermostat' %}
           <a href="{{ url_for('devices.temperature', device_id=d['id']) }}"
-             class="btn btn-sh btn-sm">Adjust</a>
+             class="btn btn-sh btn-sm">[Configure Setpoint]</a>
           {% endif %}
           <a href="{{ url_for('devices.device_detail', device_id=d['id']) }}"
-             class="btn btn-sm btn-outline-secondary ms-1">Details</a>
-        </div>
-      </div>
-    </div>
-  {% else %}
-    <div class="col-12"><p class="text-muted">No devices registered.</p></div>
-  {% endfor %}
+             class="btn btn-sh btn-sm">[Info]</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-muted">No peripherals detected on gateway bus.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
-<!-- Recent activity log -->
+<!-- System Activity Log (Classic Monospace Terminal Box) -->
 <div class="sh-card">
-  <div class="sh-card-title mb-3">Recent Activity</div>
-  {% for entry in logs %}
-  <div class="sh-log-entry">
-    <span class="log-src-{{ entry['source'] }}">[{{ entry['source'] }}]</span>
-    <span class="ms-2">{{ entry['ts'] }}</span>
-    <span class="ms-2">{{ entry['message'] }}</span>
+  <div class="sh-card-title">System Event Journal &mdash; Last 10 Entries</div>
+  <div class="sh-log-container">
+    {% for entry in logs %}
+    <div class="sh-log-entry">
+      <span class="log-src-{{ entry['source'] }}">[{{ entry['source']|upper }}]</span>
+      <span style="color:#777;">{{ entry['ts'] }}</span> &mdash;
+      <span>{{ entry['message'] }}</span>
+    </div>
+    {% else %}
+    <div class="text-muted small">Event journal is empty.</div>
+    {% endfor %}
   </div>
-  {% else %}
-  <p class="text-muted small">No log entries.</p>
-  {% endfor %}
 </div>
 {% endblock %}
-

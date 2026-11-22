@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}SmartHome{% endblock %} — SmartHome Portal</title>
+  <title>{% block title %}SmartHome Management{% endblock %} — SmartHome Gateway</title>
   <!-- Bootstrap 5 via CDN -->
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -14,48 +14,44 @@
 </head>
 <body class="sh-body">
 
-{# ── Sidebar ─────────────────────────────────────────────────────────────── #}
-<nav class="sh-sidebar d-flex flex-column">
+{# ── Sidebar Navigation ─────────────────────────────────────────────────── #}
+<nav class="sh-sidebar">
   <div class="sh-sidebar-brand">
-    <span class="sh-logo">⌂</span>
-    <span class="sh-brand-text">SmartHome</span>
+    <span class="sh-logo">[#]</span>
+    <span class="sh-brand-text">SmartHome Gateway</span>
   </div>
 
-  <ul class="nav flex-column mt-3 flex-grow-1">
-    <li class="nav-item">
-      <a class="nav-link sh-nav-link {% if request.endpoint and 'dashboard' in request.endpoint %}active{% endif %}"
-         href="{{ url_for('dashboard.index') }}">
-        <span class="sh-nav-icon">▤</span> Dashboard
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link sh-nav-link {% if request.endpoint and 'devices' in request.endpoint %}active{% endif %}"
-         href="{{ url_for('devices.list_devices') }}">
-        <span class="sh-nav-icon">◉</span> Devices
-      </a>
-    </li>
-    {% if session.get('role') == 'admin' %}
-    <li class="nav-item">
-      <a class="nav-link sh-nav-link {% if request.endpoint and 'admin' in request.endpoint %}active{% endif %}"
-         href="{{ url_for('admin.index') }}">
-        <span class="sh-nav-icon">⚙</span> Admin
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link sh-nav-link {% if request.endpoint == 'admin.status' %}active{% endif %}"
-         href="{{ url_for('admin.status') }}">
-        <span class="sh-nav-icon">◈</span> System Status
-      </a>
-    </li>
-    {% endif %}
-  </ul>
+  <div class="sh-nav-group">
+    <a class="sh-nav-link {% if request.endpoint and 'dashboard' in request.endpoint %}active{% endif %}"
+       href="{{ url_for('dashboard.index') }}">
+      <span class="sh-nav-icon">&gt;</span> Dashboard
+    </a>
+    <a class="sh-nav-link {% if request.endpoint and 'devices' in request.endpoint %}active{% endif %}"
+       href="{{ url_for('devices.list_devices') }}">
+      <span class="sh-nav-icon">&gt;</span> Connected Devices
+    </a>
+  </div>
+
+  {% if session.get('role') == 'admin' %}
+  <div class="sh-nav-group">
+    <div style="padding: 4px 14px; font-size: 10px; font-weight: bold; color: #556677; text-transform: uppercase;">
+      Administration
+    </div>
+    <a class="sh-nav-link {% if request.endpoint and 'admin.index' == request.endpoint %}active{% endif %}"
+       href="{{ url_for('admin.index') }}">
+      <span class="sh-nav-icon">&gt;</span> System Control
+    </a>
+    <a class="sh-nav-link {% if request.endpoint == 'admin.status' %}active{% endif %}"
+       href="{{ url_for('admin.status') }}">
+      <span class="sh-nav-icon">&gt;</span> Service Status
+    </a>
+  </div>
+  {% endif %}
 
   <div class="sh-sidebar-footer">
-    <span class="sh-user-badge">{{ session.get('username', '') }}</span>
-    <span class="sh-role-badge badge {% if session.get('role') == 'admin' %}bg-danger{% else %}bg-secondary{% endif %}">
-      {{ session.get('role', '') }}
-    </span>
-    <a href="{{ url_for('auth.logout') }}" class="sh-logout-link">Logout</a>
+    <div>User: <strong>{{ session.get('username', '') }}</strong></div>
+    <div>Privilege: <span class="sh-role-badge">[{{ session.get('role', '')|upper }}]</span></div>
+    <a href="{{ url_for('auth.logout') }}" class="sh-logout-link">&laquo; Disconnect</a>
   </div>
 </nav>
 
@@ -63,15 +59,14 @@
 <main class="sh-main">
   <div class="sh-topbar">
     <h1 class="sh-page-title">{% block page_title %}{% endblock %}</h1>
-    <span class="sh-topbar-right text-muted small">SmartHome Gateway v2.4.1</span>
+    <span class="sh-topbar-right">SmartHome Embedded OS &bull; Build 2.4.1-prod</span>
   </div>
 
   <div class="sh-content">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <div class="alert alert-{{ category }} py-1 px-3 mb-3 small" role="alert" style="border-radius:1px;">
           {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
       {% endfor %}
     {% endwith %}
@@ -86,4 +81,3 @@
 {% block extra_scripts %}{% endblock %}
 </body>
 </html>
-
