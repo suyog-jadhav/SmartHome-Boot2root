@@ -106,10 +106,10 @@ With `os` and `pp` ("popen") resolved via concatenation, arbitrary shell command
 
 | Check | Payload fragment | Result |
 |---|---|---|
-| Automation user exists | `cat /etc/passwd`, test for `"automation"` | `USER_FOUND` ✅ |
+| Automation user exists | `cat /etc/passwd`, test for `"automation"` | `USER_FOUND`  |
 | Running user | `id`, test for `"root"` | `NOTROOT` (runs as `www-data`) |
-| Password auth enabled | split filename `sshd_con` ~ `fig` | `PASSAUTH_YES` ✅ |
-| SSH version | `ssh -V 2>&1` | `OPENSSH_CONFIRMED` ✅ |
+| Password auth enabled | split filename `sshd_con` ~ `fig` | `PASSAUTH_YES`  |
+| SSH version | `ssh -V 2>&1` | `OPENSSH_CONFIRMED`  |
 
 ### Reading command output
 
