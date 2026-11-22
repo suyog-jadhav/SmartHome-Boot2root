@@ -1,13 +1,5 @@
 """
-Devices blueprint - thermostat control contains the intentional SSTI.
-
-Filter design (bypassable - that is the point):
-  - Numeric check: re.match(r'^-?\\d+', value) - only anchors the START,
-    so "22{{payload}}" passes. This teaches "looks-secure-but-isn't" validation.
-  - Keyword blocklist blocks trivial payloads: {{, __class__, __mro__,
-    __subclasses__, popen, system, import, config, request.
-  - Bypass: use {%set%} blocks + string concatenation to rebuild blocked
-    identifiers, or use |attr() with split strings. See SOLUTION.md.
+Devices blueprint — device management, search, and thermostat telemetry.
 """
 import re
 import logging
@@ -22,7 +14,7 @@ log = logging.getLogger(__name__)
 devices_bp = Blueprint("devices", __name__)
 
 # ---------------------------------------------------------------------------
-# SSTI blocklist — blocks trivial one-shot payloads; bypassable intentionally
+# Input filter — disallowed keywords
 # ---------------------------------------------------------------------------
 _BLOCKED = [
     "{{",
@@ -62,8 +54,7 @@ def list_devices():
 def search_devices():
     q = request.args.get("q", "")
     conn = get_db()
-    # TODO: fix SQL injection in device search
-    # (this comment is a decoy — the query below uses parameterised binding)
+    # TODO: review query indexing for fast full-text device search
     devices = conn.execute(
         "SELECT * FROM devices WHERE name LIKE ?", (f"%{q}%",)
     ).fetchall()
@@ -89,7 +80,7 @@ def temperature(device_id):
     if request.method == "POST":
         value = request.form.get("temperature", "")
 
-        # --- Step 1: "numeric" validation (anchored only at start — bypassable) ---
+        # Validate numeric format
         if not re.match(r"^-?\d+", value):
             message = "Invalid input: temperature must be numeric."
             return render_template(
@@ -99,10 +90,10 @@ def temperature(device_id):
                 blocked=blocked,
             )
 
-        # --- Step 2: keyword blocklist ---
+        # Keyword filtering
         if _is_blocked(value):
             log.warning(
-                "[SSTI-BLOCKED] Rejected temperature payload (len=%d): %s",
+                "[SECURITY-ALERT] Rejected temperature payload (len=%d): %s",
                 len(value),
                 value[:200],
             )
@@ -115,7 +106,7 @@ def temperature(device_id):
                 blocked=blocked,
             )
 
-        # --- INTENTIONALLY VULNERABLE SSTI (challenge) ---
+        # Format update message
         template = "Temperature updated to: " + value + " °C"
         message = render_template_string(template)
 

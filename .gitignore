@@ -29,10 +29,6 @@ root.txt
 .idea/
 .vscode/
 
-# SOLUTION.md — keep off public release (move to private branch before tagging)
-# Comment this out if you want to track it in a private repo:
-# SOLUTION.md
-
-# Legacy source bundles (absorbed into Dockerfile.selfcontained)
+# Legacy source bundles
 sshole.zip
 BYO-CTF-SSHOLE-main/

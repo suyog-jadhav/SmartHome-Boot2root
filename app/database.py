@@ -52,7 +52,6 @@ def initialize_database():
         "INSERT OR IGNORE INTO users (username, password, role) VALUES (?, ?, ?)",
         ("admin", "SmartHomeAdmin123!", "admin"),
     )
-    # Decoy: guest logs in but has no admin role and no path forward
     cursor.execute(
         "INSERT OR IGNORE INTO users (username, password, role) VALUES (?, ?, ?)",
         ("guest", "guest123", "user"),
@@ -64,9 +63,7 @@ def initialize_database():
         ("Living Room Thermostat", "thermostat", "Living Room", "online", "22", "2.1.4"),
         ("Front Door Lock",        "lock",       "Entrance",    "online", "locked", "1.9.2"),
         ("Kitchen Lights",         "light",      "Kitchen",     "online", "on",     "3.0.1"),
-        # Clue: hints at 'automation' SSH user
         ("Automation Hub",         "hub",        "Server Room", "online", "active", "2.0.0"),
-        # Decoy: camera fw version looks like a CVE rabbit-hole (not exploitable)
         ("Garage Camera",          "camera",     "Garage",      "online", "streaming", "v0.9.7-RC2"),
         ("Bedroom Lights",         "light",      "Bedroom",     "off",    "off",    "3.0.1"),
         ("Back Door Lock",         "lock",       "Entrance",    "online", "locked", "1.9.2"),
@@ -77,7 +74,7 @@ def initialize_database():
             d,
         )
 
-    # --- activity log seed (diegetic clues) ---
+    # --- initial activity log entries ---
     log_entries = [
         ("system",     "SmartHome platform started — version 2.4.1"),
         ("cron",       "Scheduled maintenance: running /opt/maintenance.sh"),

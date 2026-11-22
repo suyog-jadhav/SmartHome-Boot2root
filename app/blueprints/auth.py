@@ -1,6 +1,5 @@
 """
-Auth blueprint — login / logout.
-SQLi intentionally preserved in the login query.
+Auth blueprint — user authentication and session management.
 """
 import logging
 import os
@@ -17,14 +16,13 @@ auth_bp = Blueprint("auth", __name__)
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     error = None
-    csrf_token = os.urandom(16).hex()   # decorative — not validated (intentional)
+    csrf_token = os.urandom(16).hex()
 
     if request.method == "POST":
         username = request.form.get("username", "")
         password = request.form.get("password", "")
 
         connection = get_db()
-        # ---- INTENTIONALLY VULNERABLE SQL QUERY (challenge SQLi) ----
         query = (
             "SELECT * FROM users "
             f"WHERE username = '{username}' AND password = '{password}'"
@@ -54,6 +52,5 @@ def logout():
 
 @auth_bp.route("/forgot-password")
 def forgot_password():
-    # Intentional dead end / decoy
     abort(404)
 

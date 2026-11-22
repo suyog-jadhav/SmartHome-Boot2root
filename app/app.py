@@ -50,7 +50,7 @@ def create_app():
             "img-src 'self' data:; "
             "font-src 'self' https://cdn.jsdelivr.net;"
         )
-        # Clue: hints at template engine without naming the vulnerability
+        # Response server metadata
         response.headers["X-Powered-By"] = "Jinja2/3.1"
         return response
 

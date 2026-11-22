@@ -30,11 +30,7 @@ def index():
 @admin_bp.route("/admin/status")
 @admin_required
 def status():
-    """
-    System status page — deliberately leaks clues:
-    - 'legacy OpenSSH build, scheduled for upgrade'
-    - cron job running every minute against /opt/maintenance.sh
-    """
+    """System status and diagnostic logs."""
     conn = get_db()
     logs = conn.execute(
         "SELECT * FROM activity_log ORDER BY id DESC LIMIT 30"
@@ -44,21 +40,13 @@ def status():
 
 
 # ---------------------------------------------------------------------------
-# Decoy endpoints
+# Diagnostic endpoints
 # ---------------------------------------------------------------------------
 
 @admin_bp.route("/api/debug")
 @admin_required
 def api_debug():
-    """
-    Decoy — returns a convincing but useless fake config blob.
-    No real secrets exposed.
-    """
-    log.warning(
-        "[DECOY] /api/debug hit by user=%s ip=%s",
-        session.get("username", "?"),
-        request.remote_addr,
-    )
+    """Gateway diagnostic configuration endpoint."""
     fake = {
         "app":    "SmartHome Gateway",
         "build":  "2.4.1-prod",
@@ -73,12 +61,6 @@ def api_debug():
 
 @admin_bp.route("/backup.zip")
 def backup_zip():
-    """
-    Decoy — returns a convincing 404-looking response.
-    Logs the hit so the lab host knows someone found it.
-    """
-    log.warning(
-        "[DECOY] /backup.zip probed by ip=%s", request.remote_addr
-    )
+    """Legacy backup archive route."""
     abort(404)
 
