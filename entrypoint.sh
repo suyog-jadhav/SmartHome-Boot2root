@@ -31,23 +31,18 @@ chmod 600 /home/automation/user.txt
 chmod 600 /root/root.txt
 
 # ---------------------------------------------------------------------------
-# Donor password requirement
-# ---------------------------------------------------------------------------
-if [ -z "${SSHOLE_DONOR_PASSWORD:-}" ]; then
-    echo "[ERROR] SSHOLE_DONOR_PASSWORD environment variable is not set."
-    echo "        Set it in docker-compose.yml or pass -e SSHOLE_DONOR_PASSWORD=<password>"
-    exit 1
-fi
-
-# ---------------------------------------------------------------------------
 # Generate fresh SSH host keys
 # ---------------------------------------------------------------------------
 ssh-keygen -A
 
 # ---------------------------------------------------------------------------
 # Configure donor account with real password hash (required by SSHOLE)
+# Generated dynamically at runtime and immediately wiped from environment
 # ---------------------------------------------------------------------------
-printf 'sshole-donor:%s\n' "$SSHOLE_DONOR_PASSWORD" | chpasswd
+DONOR_PASS=$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')
+printf 'sshole-donor:%s\n' "$DONOR_PASS" | chpasswd
+unset DONOR_PASS
+unset SSHOLE_DONOR_PASSWORD 2>/dev/null || true
 
 # ---------------------------------------------------------------------------
 # SSHOLE precondition smoke tests

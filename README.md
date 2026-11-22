@@ -74,7 +74,7 @@ make shell    # Drop a debug root shell (host use only)
 
 ## Configuration
 
-The donor SSH account password is set via the `SSHOLE_DONOR_PASSWORD` environment variable in `docker-compose.yml`. You can change it before building.
+The lab runs with self-contained randomized flags and credentials. Each time the container starts, fresh flags (`user.txt` and `root.txt`) and SSH host keys are generated automatically. The SSHOLE donor account hash is also dynamically generated at runtime.
 
 ---
 

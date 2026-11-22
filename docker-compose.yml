@@ -22,10 +22,6 @@ services:
       - "127.0.0.1:5000:5000"
       - "127.0.0.1:2222:22"
 
-    environment:
-      # Change this to any string — it becomes the donor SSH password
-      SSHOLE_DONOR_PASSWORD: "LabD0norPass!"
-
     restart: unless-stopped
 
     # Resource limits — prevent runaway resource consumption

