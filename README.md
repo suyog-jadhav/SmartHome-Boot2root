@@ -37,12 +37,13 @@ make build
 make up
 ```
 
-The lab will be available at:
+The lab will be available at a dedicated IP (`10.10.10.100`) on standard ports, exactly like a real CTF machine:
 
-| Service | Address |
-|---------|---------|
-| Web App | http://127.0.0.1:5000 |
-| SSH     | `ssh -p 2222 <user>@127.0.0.1` |
+| Service | Target IP & Standard Port | Loopback Fallback |
+|---------|---------------------------|-------------------|
+| Web App | `http://10.10.10.100` (port 80) | `http://127.0.0.1:5000` |
+| SSH     | `ssh automation@10.10.10.100` (port 22) | `ssh -p 2222 automation@127.0.0.1` |
+| Ping / Recon | `ping 10.10.10.100` & `nmap -sV -sC 10.10.10.100` | N/A |
 
 ---
 

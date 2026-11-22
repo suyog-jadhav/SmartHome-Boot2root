@@ -30,8 +30,10 @@
 
 ## Attack Surface
 
-- Flask web application (HTTP 5000)
-- OpenSSH daemon (TCP 2222)
+- Dedicated Target IP: `10.10.10.100`
+- Web Application: HTTP port `80` (Flask `5000` fallback on `127.0.0.1`)
+- OpenSSH Daemon: TCP port `22` (`2222` fallback on `127.0.0.1`)
+- ICMP Ping: Responds to ping reconnaissance (`ping 10.10.10.100`)
 
 ---
 

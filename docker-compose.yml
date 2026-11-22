@@ -8,11 +8,16 @@ services:
   smarthome:
     build:
       context: .
-      dockerfile: Dockerfile.selfcontained
+      dockerfile: Dockerfile
     image: smarthome-boot2root:latest
     container_name: smarthome-lab
 
-    # Loopback-only port bindings
+    # Dedicated static IP on the custom lab network for direct nmap/browser access
+    networks:
+      lab_net:
+        ipv4_address: 10.10.10.100
+
+    # Also keep loopback bindings for backwards compatibility
     ports:
       - "127.0.0.1:5000:5000"
       - "127.0.0.1:2222:22"
@@ -34,4 +39,12 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+networks:
+  lab_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.10.0/24
+          gateway: 10.10.10.1
 

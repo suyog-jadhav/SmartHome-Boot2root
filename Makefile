@@ -16,8 +16,10 @@ build:
 up:
 	$(COMPOSE) up -d
 	@echo ""
-	@echo "  Web app : http://127.0.0.1:5000"
-	@echo "  SSH     : ssh -p 2222 automation@127.0.0.1"
+	@echo "  Target IP : 10.10.10.100"
+	@echo "  Web app   : http://10.10.10.100 (or http://127.0.0.1:5000)"
+	@echo "  SSH       : ssh automation@10.10.10.100 (or ssh -p 2222 automation@127.0.0.1)"
+	@echo "  Nmap      : nmap -sV -sC 10.10.10.100"
 	@echo ""
 	@echo "Waiting for healthcheck..."
 	@sleep 8

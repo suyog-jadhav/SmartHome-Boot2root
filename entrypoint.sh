@@ -114,5 +114,8 @@ export FLASK_SECRET=$(od -An -N32 -tx1 /dev/urandom | tr -d ' \n')
 # Run Flask as unprivileged websvc user
 su websvc -s /bin/sh -c 'cd /app && exec python3 app.py' &
 
+# Forward standard HTTP port 80 to Flask on 5000 so students can access http://10.10.10.100 directly
+python3 /app/forwarder.py &
+
 # Keep sshd in foreground
 exec /usr/sbin/sshd -D -e
