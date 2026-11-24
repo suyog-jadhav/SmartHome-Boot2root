@@ -68,10 +68,7 @@ The goal of this challenge is to simulate an end-to-end assessment of an IoT sma
 2. **Root Flag (`root.txt`)**: Escalate privileges to obtain the root flag in `/root/root.txt`.
 
 Flags follow the standard format:
-- `user{[0-9a-f]{32}}`
-- `root{[0-9a-f]{32}}`
-
-> **Note:** Flags are dynamically generated on container startup and are unique to each run.
+- `ThunderCipher{...}`
 
 ---
 

